@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automation Strategy Proposal — Redmax x AutoMates</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Great+Vibes&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--border:rgba(255,255,255,0.07);--accent:#ff3c3c;--accent3:#ffe566;--green:#39d98a;--blue:#4da6ff;--text:#e8e8f0;--muted:#6b6b88;--dim:#3a3a55;--nav-h:52px}
+  *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;font-size:15px;line-height:1.65;overflow-x:hidden}
+
+  /* NAV */
+  .sticky-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;gap:32px}
+  .nav-brand{text-decoration:none;flex-shrink:0}
+  .nav-wordmark{font-size:12px;font-weight:600;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase}
+  .nav-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+  .nav-links{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px}
+  .nav-links a{font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;padding:5px 12px;border-radius:3px;transition:color .15s,background .15s;white-space:nowrap;letter-spacing:.02em}
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+  .nav-links a.active{color:#fff;background:rgba(255,255,255,0.06)}
+
+  /* COVER */
+  .cover{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;overflow:hidden;padding:80px 60px;border-bottom:1px solid rgba(255,255,255,0.06)}
+  .cover::after{content:"";position:absolute;bottom:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.4}
+  .cover-glow{position:absolute;top:-10%;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(255,60,60,0.08) 0%,transparent 65%);pointer-events:none}
+  .cover-glow-2{position:absolute;bottom:-20%;right:-10%;width:500px;height:500px;background:radial-gradient(circle,rgba(77,166,255,0.05) 0%,transparent 70%);pointer-events:none}
+
+  /* Logo recreation */
+  .cover-logo-mark{position:relative;z-index:1;margin-bottom:40px;animation:fadeUp .5s ease both}
+  .clm-text{font-family:"Great Vibes",cursive;font-size:clamp(60px,10vw,96px);color:#fff;line-height:1;letter-spacing:0.02em;text-shadow:0 4px 40px rgba(255,60,60,0.15)}
+  .clm-swoosh{display:block;width:100%;height:20px;margin-top:2px;overflow:visible}
+
+  .cover-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.25);color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:5px 14px;border-radius:2px;margin-bottom:16px;animation:fadeUp .5s ease .1s both;position:relative;z-index:1}
+  .cover-tag::before{content:"";font-size:0;animation:none;display:none}
+  .cover-meta{display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s ease .2s both;position:relative;z-index:1}
+  .cover-meta-item{font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .cover-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--dim)}
+  .cover-scroll{position:absolute;bottom:32px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;animation:fadeUp .5s ease .5s both}
+  .cover-scroll span{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .cover-scroll-arrow{font-size:16px;color:var(--dim);animation:bounce 2s infinite}
+
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  /* LAYOUT */
+  main{max-width:1000px;margin:0 auto;padding:32px 40px 80px}
+  .section-scroll-target{scroll-margin-top:calc(var(--nav-h) + 20px)}
+  .section-header{display:flex;align-items:baseline;gap:16px;margin-bottom:16px;margin-top:36px;padding-top:20px;border-top:1px solid var(--border);justify-content:center}
+  main > .section-scroll-target:first-child > .section-header{border-top:none;margin-top:0;padding-top:0}
+  .section-number{font-family:"Bebas Neue",sans-serif;font-size:13px;letter-spacing:.15em;color:var(--accent);opacity:.7}
+  .section-title{font-family:"Bebas Neue",sans-serif;font-size:36px;letter-spacing:.04em;color:#fff;line-height:1}
+  .section-sub{font-size:14px;color:var(--muted);max-width:680px;margin-bottom:24px}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+
+  /* WHERE WE LEFT OFF */
+  .context-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:0 4px 4px 0;padding:24px 28px}
+  .context-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .context-body{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:20px;font-weight:300}
+  .context-body strong{font-weight:600;color:var(--accent3)}
+  .context-goals{border-top:1px solid var(--border);padding-top:18px;display:flex;flex-direction:column;gap:12px}
+  .context-goal{display:flex;gap:14px;align-items:flex-start}
+  .context-goal-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;min-width:120px;flex-shrink:0;padding-top:2px}
+  .context-goal-label.disc{color:var(--accent)}.context-goal-label.impl{color:var(--blue)}.context-goal-label.part{color:var(--green)}
+  .context-goal-text{font-size:13px;color:var(--muted);line-height:1.6}
+
+  /* PHASE PROGRESS */
+  .phase-progress{display:flex;align-items:flex-start;margin-bottom:20px;position:relative}
+  .phase-progress::before{content:"";position:absolute;top:14px;left:14px;right:14px;height:1px;background:var(--dim);z-index:0}
+  .pp-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;z-index:1;cursor:pointer}
+  .pp-dot-wrap{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--dim);background:var(--bg);transition:border-color .2s,background .2s}
+  .pp-step.active .pp-dot-wrap{border-color:var(--accent);background:rgba(255,60,60,0.12)}
+  .pp-step.p2.active .pp-dot-wrap{border-color:var(--blue);background:rgba(77,166,255,0.12)}
+  .pp-step.p3.active .pp-dot-wrap{border-color:var(--green);background:rgba(57,217,138,0.12)}
+  .pp-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);transition:background .2s}
+  .pp-step.active .pp-dot{background:var(--accent)}.pp-step.p2.active .pp-dot{background:var(--blue)}.pp-step.p3.active .pp-dot{background:var(--green)}
+  .pp-label{text-align:center}
+  .pp-num{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .pp-step.active.p1 .pp-num{color:var(--accent)}.pp-step.active.p2 .pp-num{color:var(--blue)}.pp-step.active.p3 .pp-num{color:var(--green)}
+  .pp-name{font-size:12px;font-weight:600;color:var(--muted)}.pp-step.active .pp-name{color:#fff}
+  .pp-time{font-family:"DM Mono",monospace;font-size:10px;color:var(--dim);margin-top:1px}
+
+  /* ACCORDION */
+  .roadmap{display:flex;flex-direction:column;gap:10px}
+  .phase-accordion{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color .2s}
+  .phase-accordion:hover,.phase-accordion.open{border-color:var(--dim)}
+  .phase-accordion-header{display:flex;align-items:center;gap:16px;padding:18px 24px;cursor:pointer;user-select:none}
+  .phase-accordion-header:hover{background:rgba(255,255,255,0.02)}
+  .phase-badge{font-family:"Bebas Neue",sans-serif;font-size:11px;letter-spacing:.15em;padding:4px 10px;border-radius:2px;white-space:nowrap;flex-shrink:0}
+  .disc .phase-badge{background:rgba(255,60,60,0.12);color:var(--accent);border:1px solid rgba(255,60,60,0.25)}
+  .impl .phase-badge{background:rgba(77,166,255,0.12);color:var(--blue);border:1px solid rgba(77,166,255,0.25)}
+  .part .phase-badge{background:rgba(57,217,138,0.12);color:var(--green);border:1px solid rgba(57,217,138,0.25)}
+  .phase-header-title{font-weight:600;font-size:15px;color:#fff;flex:1}
+  .phase-timing{font-family:"DM Mono",monospace;font-size:11px;color:var(--muted)}
+  .phase-chevron{color:var(--muted);font-size:11px;transition:transform .3s ease;flex-shrink:0}
+  .phase-accordion.open .phase-chevron{transform:rotate(180deg)}
+  .phase-accordion-body{max-height:0;overflow:hidden;transition:max-height .5s ease}
+  .phase-accordion.open .phase-accordion-body{max-height:4000px}
+  .phase-body-inner{padding:4px 24px 28px;border-top:1px solid var(--border)}
+
+  /* STEPS */
+  .step-list{display:flex;flex-direction:column;gap:22px;margin-top:20px}
+  .step{display:flex;gap:16px}
+  .step-num{font-family:"Bebas Neue",sans-serif;font-size:22px;line-height:1;min-width:22px;flex-shrink:0;padding-top:2px}
+  .disc .step-num{color:var(--accent)}.impl .step-num{color:var(--blue)}.part .step-num{color:var(--green)}
+  .step-content{flex:1}
+  .step-title{font-weight:600;font-size:14px;color:#fff;margin-bottom:6px}
+  .step-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+  .step-bullets{list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+  .step-bullets li{font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.55}
+  .step-bullets li::before{content:"–";color:var(--dim);flex-shrink:0}
+
+  /* 4Q FRAMEWORK */
+  .q-framework{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .q-item{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+  .q-num{font-family:"DM Mono",monospace;font-size:11px;font-weight:700;flex-shrink:0;min-width:16px;padding-top:2px;color:var(--accent)}
+  .q-label{font-size:11px;font-weight:700;color:var(--text);letter-spacing:.02em;margin-bottom:2px}
+  .q-desc{font-size:11px;color:var(--muted);line-height:1.5}
+
+  /* MATRIX */
+  .opp-matrix{margin-top:16px}
+  .matrix-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .matrix-axes{display:grid;grid-template-columns:24px 1fr;grid-template-rows:1fr 28px;gap:0}
+  .matrix-y-label{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;text-align:center;grid-row:1;grid-column:1}
+  .matrix-x-label{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;grid-row:2;grid-column:2;display:flex;justify-content:space-between;padding:6px 0 0}
+  .matrix-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;grid-row:1;grid-column:2}
+  .matrix-q{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px 16px}
+  .matrix-q.tl{border-top:2px solid var(--muted)}.matrix-q.tr{border-top:2px solid var(--accent)}.matrix-q.bl{border-top:2px solid var(--blue)}.matrix-q.br{border-top:2px solid var(--green)}
+  .matrix-q-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+  .matrix-q.tl .matrix-q-label{color:var(--muted)}.matrix-q.tr .matrix-q-label{color:var(--accent)}.matrix-q.bl .matrix-q-label{color:var(--blue)}.matrix-q.br .matrix-q-label{color:var(--green)}
+  .matrix-item{font-size:12px;color:var(--text);background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:3px;padding:6px 10px;margin-bottom:6px}
+  .matrix-item:last-child{margin-bottom:0}
+  .matrix-item.done{border-left:2px solid var(--green);color:var(--muted)}
+  .matrix-item .done-badge{font-size:10px;color:var(--green);font-weight:600;margin-left:6px}
+  .matrix-note{font-size:11px;color:var(--dim);margin-top:10px;font-style:italic}
+
+  /* PROGRESSION — Quick Wins -> Big Swings */
+  .progression{display:flex;align-items:stretch;margin-top:20px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .prog-stage{flex:1;padding:18px 20px}
+  .prog-stage.qw{background:rgba(57,217,138,0.04)}.prog-stage.bs{background:rgba(255,60,60,0.04)}
+  .prog-stage-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+  .prog-stage.qw .prog-stage-label{color:var(--green)}.prog-stage.bs .prog-stage-label{color:var(--accent)}
+  .prog-items{display:flex;flex-direction:column;gap:5px}
+  .prog-item{font-size:12px;color:var(--muted);display:flex;gap:7px;align-items:flex-start}
+  .prog-item::before{content:"·";color:var(--dim);flex-shrink:0;font-size:11px;padding-top:1px}
+  .prog-item.done{color:var(--green)}.prog-item.done::before{content:"✓";color:var(--green)}
+  .prog-arrow-col{display:flex;align-items:center;justify-content:center;padding:0 16px;font-size:24px;color:var(--dim);flex-shrink:0;border-left:1px solid var(--border);border-right:1px solid var(--border);background:rgba(255,255,255,0.01)}
+
+  /* EXAMPLE TIMELINE */
+  .etl{display:flex;flex-direction:column;margin-bottom:28px}
+  .etl-step{display:flex;gap:20px}
+  .etl-indicator{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+  .etl-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:13px;letter-spacing:.05em;flex-shrink:0}
+  .etl-step.disc .etl-dot{background:rgba(255,60,60,0.12);border:2px solid var(--accent);color:var(--accent)}
+  .etl-step.impl .etl-dot{background:rgba(77,166,255,0.12);border:2px solid var(--blue);color:var(--blue)}
+  .etl-step.part .etl-dot{background:rgba(57,217,138,0.12);border:2px solid var(--green);color:var(--green)}
+  .etl-line{width:1px;min-height:20px;flex:1;margin:4px 0}
+  .etl-step.disc .etl-line{background:linear-gradient(to bottom,var(--accent),var(--blue))}
+  .etl-step.impl .etl-line{background:linear-gradient(to bottom,var(--blue),var(--green))}
+  .etl-step.part .etl-line{background:var(--dim);opacity:.3}
+  .etl-content{padding:4px 0 24px;flex:1}
+  .etl-step:last-child .etl-content{padding-bottom:0}
+  .etl-phase-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+  .etl-step.disc .etl-phase-tag{color:var(--accent)}.etl-step.impl .etl-phase-tag{color:var(--blue)}.etl-step.part .etl-phase-tag{color:var(--green)}
+  .etl-title{font-weight:600;font-size:15px;color:#fff;margin-bottom:5px}
+  .etl-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+  /* PROCESS MAPS */
+  .process-maps{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+  .process-map-wrap{background:#f5f4f0;border-radius:8px;overflow:hidden}
+  .process-map-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px 16px;display:flex;align-items:center;gap:8px}
+  .before-map .process-map-label{background:#fee2e2;color:#b91c1c}
+  .after-map .process-map-label{background:#dcfce7;color:#166534}
+  .process-map-label span{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .before-map .process-map-label span{background:#ef4444}.after-map .process-map-label span{background:#22c55e}
+  .diagram-inner{padding:20px 16px 24px;font-family:"DM Sans",sans-serif;display:flex;flex-direction:column;align-items:center;gap:0}
+  .d-trigger{display:flex;align-items:center;gap:10px;background:#e8e6df;border:.5px solid #6b6b5a;border-radius:20px;padding:9px 18px;font-size:12px;font-weight:500;color:#2c2c2a}
+  .d-trigger-dot{width:7px;height:7px;border-radius:50%;background:#6b6b5a;flex-shrink:0}
+  .d-arrow{display:flex;justify-content:center;align-items:center;height:22px;color:#aaa;font-size:14px}
+  .d-node{width:200px;border-radius:7px;padding:9px 14px;text-align:center;font-size:12px;font-weight:500;border:.5px solid}
+  .d-purple{background:#eeedfe;border-color:#534ab7;color:#3c3489}.d-teal{background:#e1f5ee;border-color:#0f6e56;color:#085041}
+  .d-error-badge{display:inline-flex;align-items:center;gap:3px;background:#fee2e2;border:1px solid #fca5a5;border-radius:3px;padding:2px 7px;font-size:10px;color:#b91c1c;font-weight:600;margin-top:6px}
+  .d-extract{background:#eeedfe;border:.5px solid #534ab7;border-radius:8px;padding:10px 16px;margin:0 auto;max-width:300px;text-align:center}
+  .d-extract-title{font-size:12px;font-weight:500;color:#3c3489}
+  .d-extract-sub{font-size:10px;color:#534ab7;margin-top:3px}
+  .d-parallel-label{text-align:center;font-size:10px;color:#888;margin:6px 0 8px}
+  .d-spine{height:1px;background:#ccc;margin:0 8px}
+  .d-branches{display:flex;gap:4px;justify-content:center;width:100%}
+  .d-branch{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}
+  .d-branch-stem{width:1px;height:16px;background:#ccc}
+  .d-branch-head{width:100%;border-radius:6px;padding:8px 4px;text-align:center;font-size:10px;font-weight:500;border:.5px solid #0f6e56;background:#e1f5ee;color:#085041;line-height:1.3}
+
+  /* BEFORE/AFTER + STATS */
+  .before-after-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+  .ba-block{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:18px 20px}
+  .ba-block.before .ba-label{color:var(--accent)}.ba-block.after .ba-label{color:var(--green)}
+  .ba-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+  .ba-stat{font-family:"DM Mono",monospace;font-size:32px;font-weight:500;color:#fff;margin-bottom:4px}
+  .ba-stat.good{color:var(--green)}.ba-desc{font-size:12px;color:var(--muted)}
+  .assumptions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0 28px}
+  .assumption-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px}
+  .assumption-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .assumption-value{font-family:"DM Mono",monospace;font-size:18px;color:var(--text)}
+  .assumption-source{font-size:10px;color:var(--dim);margin-top:3px}
+
+  /* SCALE BRIDGE */
+  .scale-bridge{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:20px}
+  .scale-bridge-header{padding:22px 28px 20px;border-bottom:1px solid var(--border)}
+  .scale-bridge-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .scale-bridge-heading{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:.04em;color:#fff;line-height:1.15}
+  .scale-bridge-heading em{color:var(--green);font-style:normal}
+  .scale-bridge-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
+  .scale-bridge-col{padding:20px 24px}
+  .scale-bridge-col+.scale-bridge-col{border-left:1px solid var(--border)}
+  .sbc-num{font-family:"DM Mono",monospace;font-size:32px;font-weight:500;margin-bottom:6px;line-height:1}
+  .sbc-num.red{color:var(--accent)}.sbc-num.yellow{color:var(--accent3)}.sbc-num.green{color:var(--green)}
+  .sbc-label{font-size:12px;color:var(--muted);line-height:1.55}
+  .scale-bridge-cta{padding:14px 28px;background:rgba(57,217,138,0.04);border-top:1px solid rgba(57,217,138,0.1)}
+  .scale-bridge-cta-text{font-size:13px;color:var(--muted)}
+  .scale-bridge-cta-text strong{color:var(--text)}
+
+  /* CALCULATOR */
+  .capacity-calc{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .calc-header{padding:14px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .calc-header-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .calc-header-badge{font-size:10px;background:rgba(255,230,102,0.1);border:1px solid rgba(255,230,102,0.2);color:var(--accent3);padding:2px 8px;border-radius:2px;font-weight:600;letter-spacing:.06em}
+  .calc-body{padding:24px 22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;align-items:center}
+  .calc-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .calc-input-wrap{display:flex;align-items:center;gap:4px}
+  .calc-prefix{font-family:"DM Mono",monospace;font-size:20px;color:var(--muted);line-height:1}
+  .calc-input{background:var(--surface2);border:1px solid var(--dim);border-radius:4px;color:#fff;font-family:"DM Mono",monospace;font-size:26px;font-weight:500;padding:8px 12px;width:100%;outline:none;transition:border-color .2s}
+  .calc-input:focus{border-color:var(--accent)}
+  .calc-hint{font-size:11px;color:var(--dim);margin-top:6px}
+  .calc-result{background:rgba(255,230,102,0.04);border:1px solid rgba(255,230,102,0.12);border-radius:6px;padding:16px 20px}
+  .calc-result-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .calc-result-value{font-family:"DM Mono",monospace;font-size:34px;font-weight:500;color:var(--accent3);line-height:1}
+  .calc-result-sub{font-size:11px;color:var(--muted);margin-top:5px}
+
+  /* PRICING */
+  .pricing-grid{display:flex;flex-direction:column;gap:12px}
+  .pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;display:flex;align-items:stretch;transition:border-color .2s}
+  .pricing-card:hover{border-color:var(--dim)}
+  .pricing-phase-col{width:200px;padding:22px 20px;border-right:1px solid var(--border);flex-shrink:0}
+  .pricing-phase-num{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+  .disc .pricing-phase-num{color:var(--accent)}.impl .pricing-phase-num{color:var(--blue)}.part .pricing-phase-num{color:var(--green)}
+  .pricing-phase-name{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:.04em;color:#fff;margin-bottom:4px}
+  .pricing-phase-time{font-family:"DM Mono",monospace;font-size:10px;color:var(--muted)}
+  .pricing-details{flex:1;padding:22px 24px;display:flex;gap:28px;align-items:flex-start}
+  .pricing-amount-col{flex-shrink:0;min-width:120px}
+  .pricing-amount{font-family:"DM Mono",monospace;font-size:26px;font-weight:500}
+  .disc .pricing-amount{color:var(--accent)}.impl .pricing-amount{color:var(--blue)}.part .pricing-amount{color:var(--green)}
+  .pricing-period{font-size:11px;color:var(--muted);margin-top:2px}
+  .pricing-includes{flex:1;display:flex;flex-direction:column;gap:5px;padding-top:3px}
+  .pricing-includes span{font-size:12px;color:var(--muted);display:flex;gap:8px}
+  .pricing-includes span::before{content:"–";color:var(--dim);flex-shrink:0}
+
+  /* NEXT STEPS */
+  .next-steps{display:flex;flex-direction:column;gap:10px}
+  .next-step{display:flex;gap:18px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px 20px;transition:border-color .2s}
+  .next-step:hover{border-color:var(--dim)}
+  .next-step-num{font-family:"Bebas Neue",sans-serif;font-size:22px;color:var(--accent);line-height:1;min-width:26px;flex-shrink:0}
+  .next-step-title{font-weight:600;font-size:14px;color:#fff;margin-bottom:3px}
+  .next-step-desc{font-size:12px;color:var(--muted)}
+
+  footer{text-align:center;padding:40px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+
+  @page{size:1100px 1400px;margin:0}
+  @media print{
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    .sticky-nav{display:none!important}
+    body{padding-top:0!important}
+    .cover{min-height:100vh;padding:60px;page-break-after:always}
+    .cover-scroll{display:none}
+    .reveal{opacity:1!important;transform:none!important}
+    .phase-accordion-body{max-height:none!important;overflow:visible!important}
+    .phase-accordion{page-break-inside:avoid;break-inside:avoid}
+    main{padding-top:40px}
+  }
+  @media(max-width:720px){.sticky-nav{padding:0 16px;gap:12px}.nav-links{display:none}.cover{padding:80px 24px 60px}main{padding:40px 20px 80px}.process-maps,.before-after-stats,.q-framework,.scale-bridge-grid{grid-template-columns:1fr}.progression{flex-direction:column}.prog-arrow-col{display:none}.pricing-card{flex-direction:column}.pricing-phase-col{width:100%;border-right:none;border-bottom:1px solid var(--border)}.pricing-details{flex-direction:column;gap:14px}.calc-body{grid-template-columns:1fr}.phase-progress::before{display:none}}
+</style>
+</head>
+<body>
+
+<nav class="sticky-nav">
+  <a class="nav-brand" href="#cover"><span class="nav-wordmark">Redmax Proposal</span></a>
+  <div class="nav-sep"></div>
+  <div class="nav-links">
+    <a href="#example" data-section="example">Real Example</a>
+    <a href="#roadmap" data-section="roadmap">Roadmap</a>
+    <a href="#pricing" data-section="pricing">Investment</a>
+    <a href="#next-steps" data-section="next-steps">Next Steps</a>
+  </div>
+</nav>
+
+<div class="cover" id="cover">
+  <div class="cover-glow"></div>
+  <div class="cover-glow-2"></div>
+
+  <div class="cover-logo-mark">
+    <div class="clm-text">Redmax Events</div>
+    <svg class="clm-swoosh" viewBox="0 0 500 24" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 10,18 C 80,4 160,22 250,12 C 340,2 420,20 490,8" stroke="#ff3c3c" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <div class="cover-tag">Automation Strategy Proposal</div>
+
+  <div class="cover-meta">
+    <span class="cover-meta-item">Prepared for Brandon</span>
+    <div class="cover-meta-dot"></div>
+    <span class="cover-meta-item">JC Unser &amp; Shawn Weigand</span>
+    <div class="cover-meta-dot"></div>
+    <span class="cover-meta-item">AutoMates</span>
+    <div class="cover-meta-dot"></div>
+    <span class="cover-meta-item">March 2026</span>
+  </div>
+
+  <div class="cover-scroll">
+    <span>Scroll to explore</span>
+    <div class="cover-scroll-arrow">&#8595;</div>
+  </div>
+</div>
+
+<main>
+
+  <div id="example" class="section-scroll-target">
+    <div class="section-header reveal">
+      <span class="section-number">01 &mdash;</span>
+      <span class="section-title">What We've Built So Far: Onboarding Workflow</span>
+    </div>
+    <p class="section-sub reveal">Here's exactly how all three phases played out with Keith's onboarding workflow -- the automation we already built.</p>
+
+    <div class="etl reveal">
+      <div class="etl-step disc">
+        <div class="etl-indicator"><div class="etl-dot">01</div><div class="etl-line"></div></div>
+        <div class="etl-content">
+          <div class="etl-phase-tag">Discovery</div>
+          <div class="etl-title">We met with Brandon + Keith to identify the issue</div>
+          <div class="etl-desc">Keith was manually copying project data into 7+ tools every time a new job came in. 30 minutes per project. 10 projects a month. High error risk -- data typed by hand into each system separately.</div>
+        </div>
+      </div>
+      <div class="etl-step impl">
+        <div class="etl-indicator"><div class="etl-dot">02</div><div class="etl-line"></div></div>
+        <div class="etl-content">
+          <div class="etl-phase-tag">Implementation</div>
+          <div class="etl-title">We built the n8n workflow</div>
+          <div class="etl-desc">A single trigger in Monday.com now fires 7 tasks in parallel -- automatically. No manual entry. No missed steps. Review only takes ~2 minutes.</div>
+        </div>
+      </div>
+      <div class="etl-step part">
+        <div class="etl-indicator"><div class="etl-dot">03</div><div class="etl-line"></div></div>
+        <div class="etl-content">
+          <div class="etl-phase-tag">Partnership</div>
+          <div class="etl-title">We continue to refine, monitor + support adoption</div>
+          <div class="etl-desc">Keith is trained on the workflow and knows how to update it as the process changes. We monitor for errors, optimize as volume grows, and document everything for new hires.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="process-maps reveal">
+      <div class="process-map-wrap before-map">
+        <div class="process-map-label"><span></span>Current Process -- Manual</div>
+        <div class="diagram-inner">
+          <div class="d-trigger"><div class="d-trigger-dot"></div>Invoice given to Keith from Jenna</div>
+          <div class="d-arrow">&#8595;</div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="d-node d-purple">Copy fields manually</div>
+            <div class="d-error-badge">&#9888; manual error risk</div>
+          </div>
+          <div class="d-arrow">&#8595;</div><div class="d-node d-teal">Dropbox</div>
+          <div class="d-arrow">&#8595;</div><div class="d-node d-teal">CompanyCam</div>
+          <div class="d-arrow">&#8595;</div><div class="d-node d-teal">Printavo</div>
+          <div class="d-arrow">&#8595;</div><div class="d-node d-teal">RE Grid Sheet</div>
+          <div class="d-arrow">&#8595;</div><div class="d-node d-teal">RE Expense Sheet</div>
+          <div class="d-arrow">&#8595;</div><div class="d-node d-teal">Google Calendar</div>
+          <div class="d-arrow">&#8595;</div><div class="d-node d-teal">Gmail</div>
+        </div>
+      </div>
+      <div class="process-map-wrap after-map">
+        <div class="process-map-label"><span></span>Automated -- n8n Workflow</div>
+        <div class="diagram-inner">
+          <div class="d-trigger"><div class="d-trigger-dot"></div>Monday.com item updated</div>
+          <div class="d-arrow">&#8595;</div>
+          <div class="d-extract">
+            <div class="d-extract-title">Extract fields</div>
+            <div class="d-extract-sub">Invoice ID &middot; company &middot; dates &middot; email &middot; location &middot; install flag</div>
+          </div>
+          <div class="d-arrow">&#8595;</div>
+          <div class="d-parallel-label">7 branches fire in parallel</div>
+          <div class="d-spine"></div>
+          <div class="d-branches">
+            <div class="d-branch"><div class="d-branch-stem"></div><div class="d-branch-head">Dropbox</div></div>
+            <div class="d-branch"><div class="d-branch-stem"></div><div class="d-branch-head">CompanyCam</div></div>
+            <div class="d-branch"><div class="d-branch-stem"></div><div class="d-branch-head">Printavo</div></div>
+            <div class="d-branch"><div class="d-branch-stem"></div><div class="d-branch-head">RE Grid</div></div>
+            <div class="d-branch"><div class="d-branch-stem"></div><div class="d-branch-head">RE Expenses</div></div>
+            <div class="d-branch"><div class="d-branch-stem"></div><div class="d-branch-head">Google Calendar</div></div>
+            <div class="d-branch"><div class="d-branch-stem"></div><div class="d-branch-head">Gmail</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="before-after-stats reveal">
+      <div class="ba-block before"><div class="ba-label">Before -- Manual</div><div class="ba-stat">30 min</div><div class="ba-desc">per project, done manually by Keith</div></div>
+      <div class="ba-block after"><div class="ba-label">After -- Automated</div><div class="ba-stat good">~2 min</div><div class="ba-desc">review only -- everything fires automatically</div></div>
+    </div>
+
+    <div class="reveal">
+      <div class="assumptions-grid">
+        <div class="assumption-card"><div class="assumption-label">Time / Project (Manual)</div><div class="assumption-value">30 min</div><div class="assumption-source">Keith's current process</div></div>
+        <div class="assumption-card"><div class="assumption-label">Projects / Month</div><div class="assumption-value">10</div><div class="assumption-source">Current volume</div></div>
+        <div class="assumption-card"><div class="assumption-label">Hours Saved / Month</div><div class="assumption-value" style="color:var(--green)">4.7 hrs</div><div class="assumption-source">(30-2 min) x 10 / 60</div></div>
+        <div class="assumption-card"><div class="assumption-label">Hours Saved / Year</div><div class="assumption-value" style="color:var(--green)">56 hrs</div><div class="assumption-source">4.7 x 12 months</div></div>
+      </div>
+    </div>
+
+    <div class="scale-bridge reveal">
+      <div class="scale-bridge-header">
+        <div class="scale-bridge-eyebrow">The bigger picture</div>
+        <div class="scale-bridge-heading">That was <em>one process</em>. Now multiply it across every part of the business.</div>
+      </div>
+      <div class="scale-bridge-grid">
+        <div class="scale-bridge-col">
+          <div class="sbc-num red">1</div>
+          <div class="sbc-label">automation built so far, in one area of the business</div>
+        </div>
+        <div class="scale-bridge-col">
+          <div class="sbc-num yellow">6-8</div>
+          <div class="sbc-label">additional automation opportunities identified in early conversations</div>
+        </div>
+        <div class="scale-bridge-col">
+          <div class="sbc-num green">+X</div>
+          <div class="sbc-label">additional projects per month Redmax can take on as capacity opens up</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+  <div id="roadmap" class="section-scroll-target">
+    <div class="section-header reveal">
+      <span class="section-number">02 &mdash;</span>
+      <span class="section-title">Roadmap</span>
+    </div>
+    <p class="section-sub reveal">Three phases.</p>
+
+    <div class="phase-progress reveal">
+      <div class="pp-step p1 active" onclick="openPhase(0)">
+        <div class="pp-dot-wrap"><div class="pp-dot"></div></div>
+        <div class="pp-label"><div class="pp-num">Phase 01</div><div class="pp-name">Discovery</div><div class="pp-time">Month 1</div></div>
+      </div>
+      <div class="pp-step p2" onclick="openPhase(1)">
+        <div class="pp-dot-wrap"><div class="pp-dot"></div></div>
+        <div class="pp-label"><div class="pp-num">Phase 02</div><div class="pp-name">Implementation</div><div class="pp-time">Month 2+</div></div>
+      </div>
+      <div class="pp-step p3" onclick="openPhase(2)">
+        <div class="pp-dot-wrap"><div class="pp-dot"></div></div>
+        <div class="pp-label"><div class="pp-num">Phase 03</div><div class="pp-name">Partnership</div><div class="pp-time">Month 2+</div></div>
+      </div>
+    </div>
+
+    <div class="roadmap reveal">
+
+      <div class="phase-accordion disc open" onclick="togglePhase(this)">
+        <div class="phase-accordion-header">
+          <div class="phase-badge">Phase 01</div>
+          <div class="phase-header-title">Discovery</div>
+          <div class="phase-timing">Month 1</div>
+          <div class="phase-chevron">&#9660;</div>
+        </div>
+        <div class="phase-accordion-body"><div class="phase-body-inner"><div class="step-list">
+
+          <div class="step"><div class="step-num">1</div><div class="step-content">
+            <div class="step-title">Map Brandon's Priorities</div>
+            <div class="step-desc">We start at the top -- a focused session with Brandon to identify every major area of Redmax (project delivery, onboarding, warehouse, ops, billing, and more) and understand where the biggest pain points are.</div>
+          </div></div>
+
+          <div class="step"><div class="step-num">2</div><div class="step-content">
+            <div class="step-title">Process Mapping -- with your team</div>
+            <div class="step-desc">30-45 minutes with Keith, Jenna, Tavian, and others doing the work every day. For every process, four questions:</div>
+            <div class="q-framework">
+              <div class="q-item"><div class="q-num">1</div><div><div class="q-label">Current Process</div><div class="q-desc">Walk me through exactly what you do, start to finish</div></div></div>
+              <div class="q-item"><div class="q-num">2</div><div><div class="q-label">Current Friction</div><div class="q-desc">What's the most time-consuming or error-prone part?</div></div></div>
+              <div class="q-item"><div class="q-num">3</div><div><div class="q-label">Optimal Outcome</div><div class="q-desc">If this ran perfectly, what would that look like?</div></div></div>
+              <div class="q-item"><div class="q-num">4</div><div><div class="q-label">KPIs + ROI</div><div class="q-desc">How do you measure success? Time saved, errors reduced, revenue unlocked?</div></div></div>
+            </div>
+          </div></div>
+
+          <div class="step"><div class="step-num">3</div><div class="step-content">
+            <div class="step-title">Findings Presentation + Opportunity Matrix</div>
+            <div class="step-desc">End of Month 1, we present everything. Every opportunity is ranked by ROI vs. build effort -- and we deliver a detailed implementation proposal for Phase 2.</div>
+            <div class="opp-matrix" style="margin-top:16px">
+              <div class="matrix-label">Example Output -- Redmax Opportunity Matrix</div>
+              <div class="matrix-axes">
+                <div class="matrix-y-label">&#8593; Effort to Build</div>
+                <div class="matrix-grid">
+                  <div class="matrix-q tl">
+                    <div class="matrix-q-label">Deprioritize</div>
+                    <div class="matrix-item">Custom fleet management</div>
+                    <div class="matrix-item">Outsourced vendor portal</div>
+                    <div class="matrix-item">Employee scheduling</div>
+                  </div>
+                  <div class="matrix-q tr">
+                    <div class="matrix-q-label">Big Swings</div>
+                    <div class="matrix-item">Full Monday.com project hub</div>
+                    <div class="matrix-item">Event day crew coordination</div>
+                    <div class="matrix-item">Auto group texts + call sheets</div>
+                    <div class="matrix-item">Custom ops dashboard</div>
+                  </div>
+                  <div class="matrix-q bl">
+                    <div class="matrix-q-label">Nice to Have</div>
+                    <div class="matrix-item">Warehouse display screens</div>
+                    <div class="matrix-item">Client-facing status portal</div>
+                    <div class="matrix-item">Outbound lead gen outreach</div>
+                  </div>
+                  <div class="matrix-q br">
+                    <div class="matrix-q-label">Quick Wins &#11088;</div>
+                    <div class="matrix-item done">Project onboarding <span class="done-badge">&#10003; Built</span></div>
+                    <div class="matrix-item">Task delegation + team assignments</div>
+                    <div class="matrix-item">Inventory management automation</div>
+                    <div class="matrix-item">Billing + invoicing flows</div>
+                  </div>
+                </div>
+                <div class="matrix-x-label"><span>Low Impact</span><span>Business Impact &#8594;</span><span>High Impact</span></div>
+              </div>
+              <div class="matrix-note">Every item includes an ROI estimate. We always start with Quick Wins and build toward the Big Swings as the foundation is in place.</div>
+            </div>
+            <div style="margin-top:20px">
+              <div class="matrix-label">How We Get There</div>
+              <div class="progression">
+                <div class="prog-stage qw">
+                  <div class="prog-stage-label">Quick Wins</div>
+                  <div class="prog-items">
+                    <div class="prog-item done">Project onboarding</div>
+                    <div class="prog-item">Task delegation</div>
+                    <div class="prog-item">Inventory management</div>
+                    <div class="prog-item">Billing + invoicing flows</div>
+                  </div>
+                </div>
+                <div class="prog-arrow-col">&#8594;</div>
+                <div class="prog-stage bs">
+                  <div class="prog-stage-label">Big Swings</div>
+                  <div class="prog-items">
+                    <div class="prog-item">Full Monday.com project hub</div>
+                    <div class="prog-item">Event day crew coordination</div>
+                    <div class="prog-item">Auto group texts + call sheets</div>
+                    <div class="prog-item">Custom ops dashboard</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div></div>
+
+        </div></div></div>
+      </div>
+
+      <div class="phase-accordion impl" onclick="togglePhase(this)">
+        <div class="phase-accordion-header">
+          <div class="phase-badge">Phase 02</div>
+          <div class="phase-header-title">Implementation</div>
+          <div class="phase-timing">Month 2+</div>
+          <div class="phase-chevron">&#9660;</div>
+        </div>
+        <div class="phase-accordion-body"><div class="phase-body-inner"><div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-content">
+            <div class="step-title">We build -- starting with Quick Wins</div>
+            <ul class="step-bullets">
+              <li>Custom automations built for how Redmax actually operates -- not templates</li>
+              <li>Integrations across your existing tools (Monday.com, CompanyCam, Dropbox, Gmail, Google Calendar, Printavo, etc.)</li>
+              <li>Work through the prioritized roadmap in order, highest ROI first</li>
+            </ul>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content">
+            <div class="step-title">Weekly check-ins</div>
+            <ul class="step-bullets">
+              <li>Short weekly updates: what shipped, what's in progress, what's next</li>
+              <li>Course-correct early -- no surprises at end of month</li>
+              <li>You stay in the loop without having to manage the work</li>
+            </ul>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content">
+            <div class="step-title">Training + handoff</div>
+            <ul class="step-bullets">
+              <li>Every automation comes with documentation and team training</li>
+              <li>Your team knows how to use it from day one</li>
+              <li>We don't just deploy and disappear</li>
+            </ul>
+          </div></div>
+        </div>
+
+        </div></div>
+      </div>
+
+      <div class="phase-accordion part" onclick="togglePhase(this)">
+        <div class="phase-accordion-header">
+          <div class="phase-badge">Phase 03</div>
+          <div class="phase-header-title">Partnership</div>
+          <div class="phase-timing">Month 2+</div>
+          <div class="phase-chevron">&#9660;</div>
+        </div>
+        <div class="phase-accordion-body"><div class="phase-body-inner"><div class="step-list">
+          <div class="step"><div class="step-num">1</div><div class="step-content">
+            <div class="step-title">Refinement</div>
+            <ul class="step-bullets">
+              <li>Processes that ran well in month 3 often need adjustment by month 12 -- business changes, volume grows, teams shift</li>
+              <li>Regular reviews to assess what's working, what's slipping, what can be improved</li>
+              <li>Continuous improvement built into the engagement -- not a one-time build</li>
+            </ul>
+          </div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content">
+            <div class="step-title">Keep it running</div>
+            <ul class="step-bullets">
+              <li>Automations break when tools update or processes change -- we catch it and fix it</li>
+              <li>Ongoing optimization as you see what's working</li>
+              <li>New builds as Redmax scales and new needs emerge</li>
+            </ul>
+          </div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content">
+            <div class="step-title">Build it into the team</div>
+            <ul class="step-bullets">
+              <li>Goal over time: your team owns this, not us</li>
+              <li>We train the right people to manage and extend automations themselves</li>
+              <li>We transition from builders to advisors -- eventually you don't need us for the basics</li>
+              <li>Direct message access to us 7 days a week -- we respond within 24 hours</li>
+            </ul>
+          </div></div>
+        </div></div></div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div id="pricing" class="section-scroll-target">
+    <div class="section-header reveal">
+      <span class="section-number">03 &mdash;</span>
+      <span class="section-title">Investment</span>
+    </div>
+
+    <div class="reveal">
+      <div class="scale-bridge" style="margin-bottom:20px">
+        <div class="scale-bridge-header" style="text-align:center;padding:36px 40px 32px">
+          <div class="scale-bridge-eyebrow">The investment</div>
+          <div class="scale-bridge-heading" style="font-size:clamp(36px,5vw,64px);margin:12px 0 8px">
+            <em>$2,000</em> / month
+          </div>
+          <p style="font-size:15px;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.7">
+            At the start of every new month, we align on exactly what we'll build and what we'll deliver — then we build it.
+            <strong style="color:var(--text)">Pause any time.</strong>
+          </p>
+        </div>
+        <div class="scale-bridge-grid" style="border-top:1px solid var(--border)">
+          <div class="scale-bridge-col">
+            <div class="sbc-num green">&#10003;</div>
+            <div class="sbc-label">Monthly planning call — we align on priorities before any work begins</div>
+          </div>
+          <div class="scale-bridge-col">
+            <div class="sbc-num green">&#10003;</div>
+            <div class="sbc-label">You know exactly what's getting built and delivered every single month</div>
+          </div>
+          <div class="scale-bridge-col">
+            <div class="sbc-num green">&#10003;</div>
+            <div class="sbc-label">Pause any time — just let us know in advance</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="next-steps" class="section-scroll-target">
+    <div class="section-header reveal">
+      <span class="section-number">04 &mdash;</span>
+      <span class="section-title">Next Steps</span>
+    </div>
+    <div class="next-steps reveal">
+      <div class="next-step"><div class="next-step-num">01</div><div><div class="next-step-title">Finalize contract</div><div class="next-step-desc">We'll send this over after today's call. Sign and we're off.</div></div></div>
+      <div class="next-step"><div class="next-step-num">02</div><div><div class="next-step-title">Schedule Discovery kickoff</div><div class="next-step-desc">First session with Brandon -- 45-60 min. We'd suggest starting within 1-2 weeks.</div></div></div>
+      <div class="next-step"><div class="next-step-num">03</div><div><div class="next-step-title">Process mapping with the team</div><div class="next-step-desc">Keith, Jenna, Tavian -- 30-45 min each. We handle scheduling and prep.</div></div></div>
+      <div class="next-step"><div class="next-step-num">04</div><div><div class="next-step-title">Findings presentation + Implementation proposal</div><div class="next-step-desc">End of Month 1 -- we present the full opportunity matrix, ROI projections, and a detailed proposal for exactly what we'll build in Phase 2.</div></div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px">
+    <div class="capacity-calc reveal">
+      <div class="calc-header">
+        <div class="calc-header-title">Capacity Unlock Calculator</div>
+        <div class="calc-header-badge">Adjust live</div>
+      </div>
+      <div class="calc-body">
+        <div>
+          <div class="calc-label">Avg Project Value</div>
+          <div class="calc-input-wrap">
+            <span class="calc-prefix">$</span>
+            <input class="calc-input" id="avg-value" type="number" value="8000" min="0" oninput="updateROI()">
+          </div>
+          <div class="calc-hint">Per project, on average</div>
+        </div>
+        <div>
+          <div class="calc-label">Extra Projects / Month</div>
+          <div class="calc-input-wrap">
+            <input class="calc-input" id="extra-projects" type="number" value="1.5" min="0" step="0.5" oninput="updateROI()" style="padding-left:12px">
+          </div>
+          <div class="calc-hint">Capacity freed by automation</div>
+        </div>
+        <div class="calc-result">
+          <div class="calc-result-label">Annual Revenue Unlocked</div>
+          <div class="calc-result-value" id="annual-capacity">$144,000</div>
+          <div class="calc-result-sub" id="monthly-capacity-sub">$12,000 / month</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>AutoMates &nbsp;&middot;&nbsp; JC Unser &amp; Shawn Weigand &nbsp;&middot;&nbsp; useautomates.com &nbsp;&middot;&nbsp; Confidential -- Prepared for Redmax, March 2026</footer>
+
+<script>
+  function updateROI(){var a=parseFloat(document.getElementById("avg-value").value)||0,b=parseFloat(document.getElementById("extra-projects").value)||0,mo=a*b,yr=mo*12;document.getElementById("annual-capacity").textContent="$"+yr.toLocaleString();document.getElementById("monthly-capacity-sub").textContent="$"+mo.toLocaleString()+" / month";}
+  function togglePhase(el){el.classList.toggle("open");syncProgressBar();}
+  function openPhase(idx){document.querySelectorAll(".phase-accordion").forEach(function(p,i){if(i===idx)p.classList.add("open");else p.classList.remove("open");});syncProgressBar();}
+  function syncProgressBar(){var ph=document.querySelectorAll(".phase-accordion"),st=document.querySelectorAll(".pp-step");ph.forEach(function(p,i){st[i].classList.toggle("active",p.classList.contains("open"));});if(![].slice.call(ph).some(function(p){return p.classList.contains("open");}))st[0].classList.add("active");}
+  var secs=["roadmap","example","pricing","next-steps"],links=document.querySelectorAll(".nav-links a[data-section]");
+  var secObs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){var id=e.target.id;links.forEach(function(a){a.classList.toggle("active",a.dataset.section===id);});}});},{rootMargin:"-40% 0px -55% 0px"});
+  secs.forEach(function(id){var el=document.getElementById(id);if(el)secObs.observe(el);});
+  var revObs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){setTimeout(function(){e.target.classList.add("visible");},60);revObs.unobserve(e.target);}});},{threshold:0.06});
+  document.querySelectorAll(".reveal").forEach(function(el){revObs.observe(el);});
+  document.body.style.paddingTop=getComputedStyle(document.documentElement).getPropertyValue("--nav-h");
+</script>
+</body>
+</html>
