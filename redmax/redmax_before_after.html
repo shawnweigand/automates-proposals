@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Redmax × AutoMates — Before / After</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --panel:#151822;
+    --panel-2:#1b1f2b;
+    --ink:#e8ecf3;
+    --ink-dim:#a6adbb;
+    --ink-muted:#7a8194;
+    --line:#262b38;
+    --line-soft:#1f2430;
+    --accent:#7cc4ff;
+
+    --qw:#28c76f;      /* Quick Wins */
+    --qw-bg:rgba(40,199,111,.1);
+    --qw-border:rgba(40,199,111,.3);
+
+    --bs:#7cc4ff;      /* Big Swings */
+    --bs-bg:rgba(124,196,255,.1);
+    --bs-border:rgba(124,196,255,.3);
+
+    --nh:#c084fc;      /* Nice to Have */
+    --nh-bg:rgba(192,132,252,.1);
+    --nh-border:rgba(192,132,252,.3);
+
+    --before:#ff5d6c;
+    --before-bg:rgba(255,93,108,.08);
+    --before-border:rgba(255,93,108,.3);
+
+    --after:#28c76f;
+    --after-bg:rgba(40,199,111,.08);
+    --after-border:rgba(40,199,111,.3);
+  }
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--ink);margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+  header.top{
+    position:sticky;top:0;z-index:10;
+    background:linear-gradient(180deg,#0f1115 75%,rgba(15,17,21,.85) 100%);
+    border-bottom:1px solid var(--line);
+    padding:22px 28px 14px;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  header.top h1{margin:0;font-size:22px;letter-spacing:.2px}
+  header.top .sub{color:var(--ink-dim);font-size:13px;margin-top:4px;max-width:900px}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .filter-btn{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:6px 12px;
+    border-radius:7px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:.02em;
+    transition:all .15s ease;
+    font-family:inherit;
+  }
+  .filter-btn:hover{border-color:#3a4050;background:#222836}
+  .filter-btn.active{background:rgba(124,196,255,.15);border-color:rgba(124,196,255,.45);color:var(--accent)}
+  .filter-btn .count{
+    display:inline-block;
+    margin-left:6px;
+    padding:1px 6px;
+    border-radius:9px;
+    background:rgba(255,255,255,.06);
+    font-size:10.5px;
+    color:var(--ink-dim);
+  }
+  .filter-btn.active .count{background:rgba(124,196,255,.2);color:var(--accent)}
+
+  main{padding:22px 28px 80px;max-width:1400px;margin:0 auto}
+
+  .section{margin-top:28px}
+  .section-head{
+    display:flex;align-items:center;gap:10px;
+    padding-bottom:10px;margin-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .section-head .dot{width:10px;height:10px;border-radius:50%}
+  .section-head h2{margin:0;font-size:16px;letter-spacing:.3px;text-transform:uppercase;font-weight:700}
+  .section-head .desc{color:var(--ink-dim);font-size:12.5px;margin-left:4px}
+
+  .section.qw .dot{background:var(--qw)}
+  .section.qw h2{color:var(--qw)}
+  .section.bs .dot{background:var(--bs)}
+  .section.bs h2{color:var(--bs)}
+  .section.nh .dot{background:var(--nh)}
+  .section.nh h2{color:var(--nh)}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:0;
+    margin-bottom:14px;
+    overflow:hidden;
+    transition:all .18s ease;
+  }
+  .card:hover{border-color:#3a4050}
+  .card .card-head{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 18px;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .card .tag{
+    font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:4px 9px;border-radius:5px;flex-shrink:0;
+  }
+  .card.qw .tag{background:var(--qw-bg);color:var(--qw);border:1px solid var(--qw-border)}
+  .card.bs .tag{background:var(--bs-bg);color:var(--bs);border:1px solid var(--bs-border)}
+  .card.nh .tag{background:var(--nh-bg);color:var(--nh);border:1px solid var(--nh-border)}
+  .card .ref{
+    font-size:10.5px;color:var(--ink-muted);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    padding:2px 7px;border-radius:4px;background:#0f1115;border:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .card .card-title{
+    font-size:15.5px;font-weight:700;color:var(--ink);flex:1;min-width:0;
+  }
+
+  .split{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:60px;
+  }
+  .pane{padding:16px 18px;display:flex;flex-direction:column;gap:10px;position:relative}
+  .pane.before{background:var(--before-bg);border-right:1px solid var(--line-soft)}
+  .pane.after{background:var(--after-bg)}
+  .pane .pane-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    width:fit-content;
+  }
+  .pane.before .pane-tag{color:var(--before)}
+  .pane.after .pane-tag{color:var(--after)}
+  .pane .pane-tag::before{
+    content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+  }
+  .pane.before .pane-tag::before{background:var(--before)}
+  .pane.after .pane-tag::before{background:var(--after)}
+
+  .pane .headline{font-size:14.5px;font-weight:600;color:var(--ink);line-height:1.4}
+  .pane ul{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+  .pane li{font-size:13px;color:var(--ink-dim);line-height:1.55}
+  .pane li::marker{color:var(--ink-muted)}
+
+  .meta{
+    margin-top:auto;
+    padding-top:10px;border-top:1px dashed var(--line-soft);
+    display:flex;flex-direction:column;gap:6px;
+    font-size:12px;
+  }
+  .meta .row{display:flex;gap:8px;align-items:flex-start}
+  .meta .label{
+    color:var(--ink-muted);
+    text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:10.5px;
+    min-width:58px;padding-top:1px;flex-shrink:0;
+  }
+  .meta .val{color:var(--ink-dim);line-height:1.5}
+  .sources{display:flex;gap:5px;flex-wrap:wrap}
+  .sources .chip{
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--line);
+    color:var(--ink-dim);
+    font-size:11px;font-weight:600;
+    padding:2px 7px;border-radius:10px;
+  }
+
+  /* Themes section */
+  .themes{margin-top:44px;padding-top:28px;border-top:1px solid var(--line)}
+  .themes h2{margin:0 0 4px;font-size:16px;letter-spacing:.3px;text-transform:uppercase;font-weight:700;color:var(--accent)}
+  .themes .sub{color:var(--ink-dim);font-size:13px;margin-bottom:18px}
+  .theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .theme{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .theme .name{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:5px}
+  .theme .text{font-size:12.5px;color:var(--ink-dim);line-height:1.55}
+
+  footer{margin-top:40px;color:var(--ink-muted);font-size:11.5px;text-align:center}
+
+  @media (max-width: 820px){
+    .split{grid-template-columns:1fr}
+    .pane.before{border-right:none;border-bottom:1px solid var(--line-soft)}
+    header.top{padding:18px 18px 12px}
+    main{padding:18px 18px 60px}
+    .card .card-head{padding:12px 14px;flex-wrap:wrap}
+    .pane{padding:14px}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Redmax × AutoMates — Before / After</h1>
+  <div class="sub">Current-state pain points mapped one-to-one against the proposed solutions in the Opportunity Matrix. Sourced from interviews with Brandon, Jenna, Keith, and Tavian.</div>
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">All <span class="count" id="count-all"></span></button>
+    <button class="filter-btn" data-filter="qw" style="--fc:var(--qw)">Quick Wins <span class="count" id="count-qw"></span></button>
+    <button class="filter-btn" data-filter="bs">Big Swings <span class="count" id="count-bs"></span></button>
+    <button class="filter-btn" data-filter="nh">Nice to Haves <span class="count" id="count-nh"></span></button>
+  </div>
+</header>
+
+<main>
+
+  <!-- Quick Wins -->
+  <section class="section qw" data-quad="qw">
+    <div class="section-head">
+      <span class="dot"></span>
+      <h2>Quick Wins</h2>
+      <span class="desc">Low effort, high impact — ship first</span>
+    </div>
+
+    <article class="card qw" data-quad="qw">
+      <div class="card-head">
+        <span class="tag">Quick Win</span>
+        <span class="ref">QW-1</span>
+        <span class="card-title">Finish Onboarding Buildout in n8n (+ QuickBooks)</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Same job data re-keyed into 8+ systems by a human, every time</div>
+          <ul>
+            <li>Job name, number, dates, client name, and location manually entered into Dropbox, CompanyCam, Printavo, QuickBooks, expense tracker, RE grid, Google Calendar, Gusto, Trainual, handwritten shop sheets, and stickers/labels on client boxes.</li>
+            <li>Keith reports onboarding used to take ~30 minutes per job.</li>
+            <li>Jenna says the invoice name and job number alone get copy/pasted 7–8 times once a contract is signed.</li>
+            <li>A letter gets misspelled or a digit gets dropped and the wrong name ends up printed on a client-facing box.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">~30 min per new job, multiplied across every job; ongoing error risk</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Brandon</span><span class="chip">Keith</span><span class="chip">Jenna</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">One trigger → every system updated, with QuickBooks closing the loop</div>
+          <ul>
+            <li>n8n flow already live; cut Keith's onboarding from ~30 min to ~2 min.</li>
+            <li>Adding QuickBooks leg so a single trigger fires Printavo, Dropbox, Gusto, QuickBooks, Trainual, CompanyCam, RE grid, and Calendar together.</li>
+            <li>Zero re-entry for static fields, which kills the misspelling/typo failure mode Brandon called out.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">~2 min per job; human error on static fields eliminated</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card qw" data-quad="qw">
+      <div class="card-head">
+        <span class="tag">Quick Win</span>
+        <span class="ref">QW-2</span>
+        <span class="card-title">Centralize Project Management in Monday.com</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Project state lives across 15 tabs, a Hot Sheet, and people's memory</div>
+          <ul>
+            <li>Jenna: "My computer already has like 15 tabs open at a time."</li>
+            <li>RE grid exists as a tracker but isn't filled out — same for Printavo's built-in steps.</li>
+            <li>Progress tracking is verbal/visual; Tavian is usually the one chasing updates.</li>
+            <li>John (PM) produces a weekly Hot Sheet that gets emailed and posted on TVs — manual weekly rebuild.</li>
+            <li>Jenna: "If I miss a single day, I have so many emails... I don't even know where to start."</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Daily triangulation across Jenna, Keith, Tavian, and Brandon; tracking info duplicated or missing</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Jenna</span><span class="chip">Tavian</span><span class="chip">Brandon</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">One lightweight project board everyone sees and updates</div>
+          <ul>
+            <li>Single Monday project board replacing the 15-tabs + Hot Sheet pattern.</li>
+            <li>Becomes the foundation the larger Monday buildout plugs into.</li>
+            <li>Kills the "is the RE grid filled out?" question — there's one place.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Visibility replaces triangulation; meetings stop starting with "where are we on X?"</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card qw" data-quad="qw">
+      <div class="card-head">
+        <span class="tag">Quick Win</span>
+        <span class="ref">QW-3</span>
+        <span class="card-title">Delegation + Scheduling in Monday.com</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Scheduling runs on Google Calendar + text threads + verbal handoffs</div>
+          <ul>
+            <li>Main Redmax Google Calendar is the source for staffing; personal calendars are separate.</li>
+            <li>Gusto time-off sync works, but weekend unavailability and shift changes are emailed in.</li>
+            <li>Warehouse delegation is ad-hoc: Keith walks the shop, takes photos on his phone, and texts three guys in a group chat who "like" the photo when done.</li>
+            <li>Keith: "I have to go back there and write it all down... there's wasted time on my end because I have to go to them and show them what to do."</li>
+            <li>Keith and Jenna co-own scheduling; owners, due dates, and status are not consistently captured in one place.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Keith pulled off his own work to delegate; installer/crew status known only by whoever asked last</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Keith</span><span class="chip">Jenna</span><span class="chip">Brandon</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Tasks, owners, due dates, and status all live in Monday</div>
+          <ul>
+            <li>Installer/crew scheduling and task delegation moves out of Calendar + texts into Monday.</li>
+            <li>Keith, Jenna, and Brandon stop triangulating — they read one board.</li>
+            <li>Warehouse "this needs to happen today" list can be assigned ahead instead of ad-hoc photo texts.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Delegation happens once, in writing; Keith reclaims time currently spent walking and assigning</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card qw" data-quad="qw">
+      <div class="card-head">
+        <span class="tag">Quick Win</span>
+        <span class="ref">QW-4</span>
+        <span class="card-title">Internal Communication Centralization (Slack)</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">"Was it a text, a call, or an email?" — comms are everywhere</div>
+          <ul>
+            <li>Every job gets a group chat (Brandon, Keith, Jenna, Tavian, Fred, + installers).</li>
+            <li>Clients jump between email, text, and phone calls; notes from calls don't get written down.</li>
+            <li>Jenna: "Brandon will take a call from that client... no one knows what was said in that call."</li>
+            <li>SendBlue (shared texting number) is paid for but "doesn't really work great" — can't reliably send attachments or add contacts, so team defaults back to personal numbers.</li>
+            <li>Keith flags the same problem on the build side — print department vs. warehouse vs. shop use different names for the same asset, so context gets lost.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Information siloed per person; critical client approvals (e.g., $10K add-ons) happen over text with no paper trail</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Jenna</span><span class="chip">Keith</span><span class="chip">Brandon</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">One channel per project, mobile-friendly, everyone included</div>
+          <ul>
+            <li>Slack culture is built intentionally — investment in training and adoption.</li>
+            <li>Ends the "where was that conversation?" problem and gives one clean surface to feed into Monday later via integrations.</li>
+            <li>Group chats, SendBlue fragments, and scattered emails collapse into one thread per project.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Context stops living in one person's brain; onboarding a new PM doesn't require a memory dump</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card qw" data-quad="qw">
+      <div class="card-head">
+        <span class="tag">Quick Win</span>
+        <span class="ref">QW-5</span>
+        <span class="card-title">Personalized Day-Ahead / Week-Ahead Summary</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Every morning starts with a mental-load scan across inboxes and threads</div>
+          <ul>
+            <li>Jenna pretty much in every email thread the company sees; a single missed day is overwhelming.</li>
+            <li>Leadership team meets Tue/Thu to walk through upcoming jobs by reading off the calendar.</li>
+            <li>No automated view of "today's priorities, this week's deliverables, flagged risks, meetings, open approvals."</li>
+            <li>Brandon's "magic wand": overall efficiency — cut hours worked per project.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Mental-load tax at the start of every day, especially after any day off</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Jenna</span><span class="chip">Brandon</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Automated morning brief pulled from Monday, Calendar, and Slack</div>
+          <ul>
+            <li>Daily/weekly digest for Jenna and Brandon — today's priorities, this week's deliverables, flagged risks, open approvals.</li>
+            <li>Replaces the manual check-in + Hot Sheet rebuild with a feed that updates itself.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Re-orients the day in ~2 minutes; no "where do I start" after a day off</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Big Swings -->
+  <section class="section bs" data-quad="bs">
+    <div class="section-head">
+      <span class="dot"></span>
+      <h2>Big Swings</h2>
+      <span class="desc">High effort, high impact — restructure how the business runs</span>
+    </div>
+
+    <article class="card bs" data-quad="bs">
+      <div class="card-head">
+        <span class="tag">Big Swing</span>
+        <span class="ref">BS-1</span>
+        <span class="card-title">Monday.com CRM Buildout</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">No pipeline — leads live in the Create@ inbox and Brandon's head</div>
+          <ul>
+            <li>Inbound from referrals + agencies lands in the Create@ inbox; Jenna and Brandon sit on that address.</li>
+            <li>Brandon handles quotes on projects $50K+ (~80% of all projects); Jenna handles &lt;$50K.</li>
+            <li>Pitch/outreach pipeline (John's decks) is tracked informally — ~6 sent, goal of 100 to land 5 meaningful clients.</li>
+            <li>No systematic view of "what's in the pipeline, what stage, what's likely to close."</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">No forecasting, no conversion visibility; proactive client outreach is ad-hoc</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Brandon</span><span class="chip">Jenna</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Full lead-to-finish lifecycle owned in Monday</div>
+          <ul>
+            <li>Inbound leads → qualification → quote → won/lost → handoff to production all in one board.</li>
+            <li>Replaces the Create@ inbox scramble.</li>
+            <li>Gives Brandon + Jenna real pipeline visibility and a place to track pitch decks, follow-ups, and repeat-client cadence.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Pipeline becomes a dashboard instead of a scavenger hunt</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card bs" data-quad="bs">
+      <div class="card-head">
+        <span class="tag">Big Swing</span>
+        <span class="ref">BS-2</span>
+        <span class="card-title">Monday.com Project Management Buildout</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Every project's source of truth is fragmented across 8+ tools</div>
+          <ul>
+            <li>Drawings in Dropbox, invoices in QuickBooks, prints in Printavo, pack lists in CompanyCam, schedule in Google Calendar, KPIs in Google Sheets, SOPs in Trainual, photos in CompanyCam.</li>
+            <li>Mid-project changes ("client upgraded the vinyl logo to dimensional") have no standardized lifecycle — Brandon: "Where does that add go? Who knows about it? Is it on the invoice? Is it on the pack list?"</li>
+            <li>Tavian spends significant time chasing who knows what on each build (85 emails/day on drawing changes).</li>
+            <li>Keith has to walk to the print room to find out what graphics are going on a wall — labels in Printavo don't match warehouse labels.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Duplicated conversations, missed add-ons, PM context only reconstructable by interrogating four people</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Brandon</span><span class="chip">Tavian</span><span class="chip">Keith</span><span class="chip">Jenna</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">One board per project — the single source of truth</div>
+          <ul>
+            <li>Tasks, owners, drawings, assets, timeline, and status all on the project board.</li>
+            <li>Kills the "15 tabs + Hot Sheet + Slack" pattern.</li>
+            <li>Mid-project changes have a defined home: they flow to invoice, pack list, and assignee automatically.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Tavian, Keith, and Jenna stop repeating context; $10K add-ons stop living only in a text thread</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card bs" data-quad="bs">
+      <div class="card-head">
+        <span class="tag">Big Swing</span>
+        <span class="ref">BS-3</span>
+        <span class="card-title">Expense Tracking System</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Manual receipt entry with per-job attribution done by hand</div>
+          <ul>
+            <li>4 named AMEX cards (Brandon, Jenna, Tavian, Keith) + 3 gas cards in a lockbox.</li>
+            <li>Expenses manually entered into a Google Sheets expense tracker.</li>
+            <li>The tracker is NOT just for categorization — it's for job attribution: which specific job does each expense belong to.</li>
+            <li>A single AMEX charge could be split: e.g., $6,000 material order = $3K for Job A + $3K for Job B.</li>
+            <li>Jenna also adds job time to the sheet by hand after the fact.</li>
+            <li>Brandon trialed Hello Frank: loves the UI but there's no way to tag a transaction to a job.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">High daily data-entry load on Jenna; P&amp;L-by-project only as accurate as the last person who entered a receipt</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Brandon</span><span class="chip">Jenna</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Transactions captured, categorized, and job-tagged automatically</div>
+          <ul>
+            <li>AMEX feed lands in one place; each line gets a "select job" dropdown for tagging.</li>
+            <li>Per-job P&amp;L stays clean with minimal human data entry.</li>
+            <li>Double-entry between card statements and the expense sheet disappears.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Cuts the "second-shift" expense typing Jenna currently does; accuracy improves on gross margin per job</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card bs" data-quad="bs">
+      <div class="card-head">
+        <span class="tag">Big Swing</span>
+        <span class="ref">BS-4</span>
+        <span class="card-title">Cameras + AI in Warehouse for Auto-Reorder</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Consumable restocks rely on a two-bin QR scan that doesn't get done</div>
+          <ul>
+            <li>Keith built a green/red two-bin system sized to ~1 week of supply for each consumable.</li>
+            <li>When red side shows, worker is supposed to flip the bin, scan a QR, and fill out a Google Form — which triggers an email to reorder.</li>
+            <li>Brandon: "If I'm rushing to grab a roll of tape to throw in the back of the truck... am I turning that bin around, scanning a QR code, filling out a Google form?"</li>
+            <li>Keith adds new items to the system manually — build a box, paint it, measure the product, copy a Google Form template, paste SKU from Home Depot, add a photo.</li>
+            <li>Result: stockouts mid-build (e.g., "we're out of screws") are a weekly failure mode.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Stockouts interrupt builds; Keith spends hours creating forms + physical bins for every new SKU</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Brandon</span><span class="chip">Keith</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Camera + AI watches the aisle and flags the human to confirm reorder</div>
+          <ul>
+            <li>Security camera on the consumables aisle (cameras already throughout the building).</li>
+            <li>AI detects a red bin that stays red for 5+ minutes and alerts Keith/purchasing with a screenshot.</li>
+            <li>No auto-order — human approves before the PO goes out, preventing false triggers.</li>
+            <li>Brandon: "You said nothing's impossible, so I'll push the list."</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Removes a physical-compliance step from the shop; stockout-during-build mostly disappears</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card bs" data-quad="bs">
+      <div class="card-head">
+        <span class="tag">Big Swing</span>
+        <span class="ref">BS-5</span>
+        <span class="card-title">Client Portal — Drawings + Updates Synced with Monday</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Approvals happen in long email chains with attachments and Dropbox links</div>
+          <ul>
+            <li>Shop drawings and graphic approvals both flow over email; clients routinely approve the wrong version.</li>
+            <li>Old versions in Dropbox, but clients don't have clean access — they grab an old attachment and approve it.</li>
+            <li>Ashore worked for print approvals, but required double-entry (fill out Ashore + email the link anyway) — got dropped.</li>
+            <li>17 Hats had a client portal with invoices/quotes but no approvals; Core Bridge has approvals but is print/apparel-shaped — nothing on the market fits.</li>
+            <li>Crew names for venue security lists, vehicle/truck info, old quotes/invoices, W9, wire info — all sent ad-hoc on request.</li>
+            <li>$10K add-ons sometimes approved over text; no paper trail.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Version confusion, re-sends, version-4-mistakenly-reviewed scenarios; admin chases client approvals constantly</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Brandon</span><span class="chip">Jenna</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Custom client portal pulling directly from Monday</div>
+          <ul>
+            <li>Separate sections for shop drawings vs. graphic approvals; most-current version prominent, older versions gated to prevent confusion.</li>
+            <li>Job details (install date, location, crew names, vehicle, logistics) auto-populate from Monday.</li>
+            <li>Billing tab: view quotes, current invoice, pay in-portal, access W9/wire info.</li>
+            <li>Communication stays on email/text — portal captures the text-approval screenshot for paper trail.</li>
+            <li>Approve/reject directly from the portal.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Kills the email back-and-forth on revisions; clients see what matters without Redmax re-sending it</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Nice to Haves -->
+  <section class="section nh" data-quad="nh">
+    <div class="section-head">
+      <span class="dot"></span>
+      <h2>Nice to Haves</h2>
+      <span class="desc">Real value, but sequence after the core operating system is in place</span>
+    </div>
+
+    <article class="card nh" data-quad="nh">
+      <div class="card-head">
+        <span class="tag">Nice to Have</span>
+        <span class="ref">NH-1</span>
+        <span class="card-title">Custom Stylized AI Pitch Deck Tool</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">John builds every pitch deck from scratch, ~2 hours each</div>
+          <ul>
+            <li>John researches the brand (mission, story, audience), generates AI renders, scopes creative ideas — all bespoke per prospect.</li>
+            <li>~6 pitches sent; target is 100+ to land 5 meaningful clients.</li>
+            <li>Brandon: right now John "does every deck for every lead without filtering" — no email-first gauge step.</li>
+            <li>Agency wins are 2–3× the fabrication-only value (design + agency fees on top), so deck volume matters.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">~2 hours × 100 pitches = 200 hours of John's creative time to get to 5 clients</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Brandon</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Templated generator that pulls in brand research and past work</div>
+          <ul>
+            <li>Spin up an on-brand pitch deck fast; John + Brandon feed the prospect, tool does the first pass.</li>
+            <li>Pairs naturally with an email-first outreach step so decks are only built for warm leads.</li>
+            <li>Solves Brandon's "pitch deck pain" without making him become a designer.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Deck prep time drops meaningfully per pitch; volume scales without a second creative hire</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card nh" data-quad="nh">
+      <div class="card-head">
+        <span class="tag">Nice to Have</span>
+        <span class="ref">NH-2</span>
+        <span class="card-title">Fusion ↔ Rhino Integration for Tavian</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">Every build requires Tavian to re-sync Rhino design into Fusion for CAM</div>
+          <ul>
+            <li>Tavian models structure in Rhino 3D, then post-processes in Fusion for manufacturing layers/nests/simulation.</li>
+            <li>"No other software can import to each other cleanly" — manual re-work each job.</li>
+            <li>Outsourced models come in Rhino-only; Tavian has to rebuild them in Fusion.</li>
+            <li>Tavian tracked per-build time: ~626 min modeling, ~253 min drawings, ~147 min machine files — modeling is the biggest bucket.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Material re-sync time on every build; blocks Tavian from moving into a supervisory role</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Tavian</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">Automated parameter / geometry export between Rhino and Fusion</div>
+          <ul>
+            <li>Even partial automation — parameter passing or geometry export — shaves time off every job.</li>
+            <li>Removes the consistent friction point that makes outsourcing drafting harder.</li>
+            <li>Tavian can focus supervisory + KPI time instead of rebuilding models.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Recoups a meaningful slice of the 600+ min modeling time per build</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card nh" data-quad="nh">
+      <div class="card-head">
+        <span class="tag">Nice to Have</span>
+        <span class="ref">NH-3</span>
+        <span class="card-title">SendBlue Fix</span>
+      </div>
+      <div class="split">
+        <div class="pane before">
+          <span class="pane-tag">Before</span>
+          <div class="headline">SendBlue is paid for but unreliable; team reverts to personal numbers</div>
+          <ul>
+            <li>Intent: shared texting number so client messages are visible to the whole team.</li>
+            <li>Reality: trouble sending attachments and photos, trouble adding contacts, support loops back through multiple people.</li>
+            <li>Jenna: "I would ask Connor something, then he'd loop someone in, and then someone else would get looped in after that. Does anyone know how this works? Is it still in beta?"</li>
+            <li>Workaround: group chats from personal numbers, which re-silos the conversations.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Time/Cost</span><span class="val">Small footprint but an ongoing annoyance; blocks the "everyone sees client texts" goal</span></div>
+            <div class="row"><span class="label">Sources</span><span class="val sources"><span class="chip">Jenna</span><span class="chip">Brandon</span></span></div>
+          </div>
+        </div>
+        <div class="pane after">
+          <span class="pane-tag">After</span>
+          <div class="headline">SendBlue fixed so SMS comms actually work</div>
+          <ul>
+            <li>Attachments, photos, and contacts work reliably.</li>
+            <li>SMS becomes a real shared surface — feeds into the portal/Monday paper trail for client approvals over text.</li>
+          </ul>
+          <div class="meta">
+            <div class="row"><span class="label">Result</span><span class="val">Removes a persistent low-grade friction the team has been carrying for months</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Themes -->
+  <section class="themes">
+    <h2>Cross-Cutting Themes</h2>
+    <div class="sub">Patterns that show up across multiple opportunities — useful as framing for the roadmap narrative.</div>
+    <div class="theme-grid">
+      <div class="theme">
+        <div class="name">Redundant data entry</div>
+        <div class="text">Brandon's magic-wand answer and his closing ask — same info in 8+ places, entered by a human every time. Shows up in onboarding, project management, expense tracking, and client approvals.</div>
+      </div>
+      <div class="theme">
+        <div class="name">Context trapped in people's heads</div>
+        <div class="text">Jenna explicitly called out the mental-load problem; Tavian asked her in February to write down "anything you just have in your brain" before leaving. Same pattern for Keith's warehouse delegation.</div>
+      </div>
+      <div class="theme">
+        <div class="name">Tools exist but don't get used</div>
+        <div class="text">RE grid, Printavo steps, CompanyCam, Trainual, Ashore — all solve real problems on paper but fail in practice because of friction, double-entry, or shop-floor adoption barriers.</div>
+      </div>
+      <div class="theme">
+        <div class="name">Shop-floor vs. office adoption gap</div>
+        <div class="text">Office team is young, eager for AI and polished tools. Shop team's hands are covered in paint and dust — tech needs to push info TO them, not ask them to input it.</div>
+      </div>
+      <div class="theme">
+        <div class="name">Mid-project changes have no lifecycle</div>
+        <div class="text">Client add-ons live in email chains, group texts, or memory — not on the invoice, pack list, or schedule until someone remembers to push them there.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Redmax × AutoMates · Before / After · Sourced from Brandon, Jenna, Keith, and Tavian interviews</footer>
+</main>
+
+<script>
+(function(){
+  // Counts
+  const sections = document.querySelectorAll('.section');
+  const cards = document.querySelectorAll('.card');
+  const total = cards.length;
+  const counts = {qw:0, bs:0, nh:0};
+  cards.forEach(c => { counts[c.dataset.quad] = (counts[c.dataset.quad]||0) + 1; });
+  document.getElementById('count-all').textContent = total;
+  document.getElementById('count-qw').textContent = counts.qw || 0;
+  document.getElementById('count-bs').textContent = counts.bs || 0;
+  document.getElementById('count-nh').textContent = counts.nh || 0;
+
+  // Filtering
+  const buttons = document.querySelectorAll('.filter-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      sections.forEach(section => {
+        const quad = section.dataset.quad;
+        section.style.display = (f === 'all' || f === quad) ? '' : 'none';
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
